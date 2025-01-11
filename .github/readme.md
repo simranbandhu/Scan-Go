@@ -64,7 +64,7 @@
 ## `Screenshots` 
 
 ![Shopping List](/images\ShoopingList.png "Shopping List")
-![List Details](/images\ListDetails.png "List Details")
+![List Details](https://github.com/simranbandhu/Scan-Go/blob/master/images/ListDetails.png "List Details")
 ![Bill](/images\bill.png "Bill")
 
 ![Products](/images\products.png "Products")
