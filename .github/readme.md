@@ -63,10 +63,10 @@
   
 ## `Screenshots` 
 
-![Shopping List](/images\ShoopingList.png "Shopping List")
+![Shopping List](https://github.com/simranbandhu/Scan-Go/blob/master/images/ShoopingList.png "Shopping List")
 ![List Details](https://github.com/simranbandhu/Scan-Go/blob/master/images/ListDetails.png "List Details")
-![Bill](/images\bill.png "Bill")
+![Bill](https://github.com/simranbandhu/Scan-Go/blob/master/images/bill.png "Bill")
 
-![Products](/images\products.png "Products")
-![ShoppingCart1](/images\shoppingCart1.png "Shooping Cart")
-![ShoppingCart](/images\shoppingCart.png "Shooping Cart")
+![Products](https://github.com/simranbandhu/Scan-Go/blob/master/images/products.png "Products")
+![ShoppingCart1](https://github.com/simranbandhu/Scan-Go/blob/master/images/shoppingCart1.png "Shooping Cart")
+![ShoppingCart](https://github.com/simranbandhu/Scan-Go/blob/master/images/shoppingCart.png "Shooping Cart")
