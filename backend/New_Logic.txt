@@ -1,0 +1,76 @@
+OK SO 
+
+
+
+
+
+BILL KE MODEL M EK PROPERTY H TOTAL AMOUNT JO UPDATE KRTA REH RHA HU , SO THAT KHI AUR BILL ko access kru kisi aur controller m toh baar baar aggregate function na lgana pde
+
+
+PRODUCT CONTROLLERS - WHAT ARE THEY DOING ?
+
+-> addProduct 
+- First user must be logged in , protect middelware check krega ye , and if user is logged in , send user data with req.user 
+- Second check if user doesnt have activeBill property as null , If it is return bad auth response
+- Ye active bill null na ho ye bill ke controllers dekh rhe -> for more clarity check createActiveBill controller ka logic issi .txt file m 
+- Anyway if active bill is not null , I did 6 things 
+-------- 1) CREATE NEW PRODUCT DOC IN DATABASE WITH bill_id prop as currentBill bill_id
+-------- 2) GET CURRENT ACTIVE BILL FROM DATABASE -> basically findById
+-------- 3) GET TOTAL COST OF ALL THE PRODUCTS PRESENT IN BILL , and add current cost price of current product to that (check if there were no products present before what will i get)
+-------- 4) UPDATING AND SAVING TO DATABASE TOTAL AMOUNT PROPERTY OF BILL and push newProduct to products property of bill
+-------- 5) EMIT THE EVENT to notify clients that a product was added
+
+-> getAllProducts 
+-> When it will be called ? This will be called multiple times (from client side) , whenever any product is added or removed
+- First user must be logged in , protect middelware check krega ye , and if user is logged in , send user data with req.user 
+- Second check if user doesnt have activeBill property as null , If it is return bad auth response 
+- Anyway if active bill is not null , do these things
+---------- 1) CHECK IF DATABASE IS NOT EMPTY -> IF IT IS SEND DIFFERENT response
+---------- 2) GET CURRENT BILL DOCUMENT -> SO THAT I CAN SEND BACK total_amount property of currentBill back as well with other data
+---------- 3) GET PRODUCTS GROUPED BY BILL AND QUANTITY (AGGREGATE) -> THIS IS CRUCIAL (HERE I AM STRUCTURING HOW I AM GOING TO REPRESENT THIS AGGREGATED DATA)
+------- Basically all the products belonging to my current_bill id should be grouped together , and laterwards they should be grouped together again in such a way that there are no duplicate documents , Quantity property is added here to represent occurence of documents with same "unique_id" 
+---------- 4) SEND BACK THIS AGGREGATED RESULT
+
+
+
+
+
+----> Workflow goes like this
+-> 1. User logs in / signs up
+-> 2. We send OTP to user
+-> 3. User verifies OTP
+-> 4. We send back JWT token as cookie to user
+-> 5. User sends JWT token in headers to access protected routes
+-> 6. If user is logged in (can access protected routes) -> We check if user has active bill or not
+-> 7. If user has active bill -> We send back response saying user has active bill
+-> 8. If user does not have active bill -> We create active bill for user , and save it in req.user.activeBill
+-> 9. After user has valid active bill -> User can add products / getAllProducts / delete products etc 
+-> FIXED MAJOR ISSUE IN CREATE ACTIVE BILL
+
+--> Basically , i was doing findByIdAndUpdate() on active bill , and i was finding the bill document based on req.user._id . If user wants to create a new bill , but it has already created one bill in the past , then our query will rewrite older bill . and we will loose previous bill instance . Basically ek hee bill document pe kaam hoga hr baar.
+--> To fix this , i am creating new bill , if and only if activeBill property is null and user is logged in and updating user with new bill id. Otherwise , i will return req.user.activeBill.
+
+
+
+
+
+
+-> RAN INTO SOME PROBLEM REGARDING addProduct controller and protect middleware before it
+-> PROBLEM : 
+--> It slipped out of my mind that i need , req.user for proper functioning of addProduct controller
+--> Since esp32 is only sending product details , i need to get the user details somehow
+--> esp32 wont be able to pass protect middleware as it doesnt have jwt token 
+--> To provide esp32 with jwt token or user details , i need to create full duplex communication between esp32 and backend
+
+-> SOLUTION: 
+--> I created a new doc in DB for current user , which will be updated at the time of login and logout only
+--> This doc will contain the currently logged in user id and thats it
+--> It is similar to State model , as there will be only one doc in this collection
+--> When i logout i delete this doc , and when i login i create this doc
+--> This doc will be used by addProduct controller to get the user details
+---->I created new middleware , addProductProtect , which will be used by addProduct controller
+--> It's logic is based on the current user doc , if it exists then it will pass the control to next middleware
+
+CONS:
+->CURRENTY LOGGED IN USER ID IS STORED IN PLAIN TEXT , WHICH IS NOT SECURE
+->I am not ok with using doc to implement authentication , i will change it in future

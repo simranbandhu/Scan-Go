@@ -1,0 +1,30 @@
+NOTE: NEW LOGIC
+
+
+// THINGS WE KNOW
+
+1) esp32 se data jo aaega , vo ek product ka ek baar m aaega (maybe thru websocket)
+2) esp32 and server m full duplex communication nhi ho rha h, as esp32 is communicating with server and not vice versa
+3) agr esp32 se data thru websocket aaye , u need to change your code 
+4) agr route ke thru aaye simple Router will suffice
+
+
+
+NEW LOGIC:
+
+1) Initially mongoDB collection m ,collection empty h 
+2) Agr product aaya rfid se (thru route or websocket) , simply insert it into collection -> addProduct method hoga ye
+3) Ek aur method hoga to fetch all products, and send it back to client -> isme socketio use hoga for dynamic update to client
+4) jb client checkout button pe click krega , ek function run krenge jo saare products ko delete kr dega and collection empty kr dega
+
+
+PROS:
+1) Simpler logic , easy to showcase 
+2) database wont get large
+
+
+
+CONS:
+1) wont be able to implement sending bill to customers phone number or email
+2) customer wont be able to see their past bills (3 schema bnenge user,bill,products)
+3) IF FOR NEXT TRANSACTION , DATABASE ISNT EMPTY , WHOLE LOGIC WILL FALL APART
